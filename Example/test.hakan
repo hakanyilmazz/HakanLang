@@ -1,20 +1,39 @@
+? this is a comment line
+
+? Note: Codes should be on one line
+
+? display a text on the screen
 display("Hello Hakan Programming Language :D")
+
+? take input from user with message
 enterLine("Enter a text: ")
 
+? create a variable
 #constText = enterLine("Enter other text: ")
-display(-constText)
 
-? this is a comment line
+? use a created variable with '-'
+display(-constText)
 
 #name = "Hakan"
 display(-name)
 
+? use a string method
 #lengthOfName = -name.length()
 display(-lengthOfName)
 
+? string interpolation
 display("lengthOfName is ${-lengthOfName}")
 
+? print sum of numbers
+
+? displays to screen 1
 add 1
+
+? displays to screen 3
 add 1 2
+
+? displays to screen 6
 add 1 2 3
+
+? displays to screen 10
 add 1 2 3 4
