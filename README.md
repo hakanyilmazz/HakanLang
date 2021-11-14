@@ -1,9 +1,9 @@
 # HakanLang
  This is my basic programming language :D
 
-- Requirements
+## Requirements
 * Java JDK 17
 * Intellij IDEA Community
 
-- For Run
+## For Run
 * java -jar HakanLang.jar test.hakan
