@@ -1,0 +1,20 @@
+display("Hello Hakan Programming Language :D")
+enterLine("Enter a text: ")
+
+#constText = enterLine("Enter other text: ")
+display(-constText)
+
+? this is a comment line
+
+#name = "Hakan"
+display(-name)
+
+#lengthOfName = -name.length()
+display(-lengthOfName)
+
+display("lengthOfName is ${-lengthOfName}")
+
+add 1
+add 1 2
+add 1 2 3
+add 1 2 3 4
