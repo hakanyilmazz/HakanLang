@@ -8,3 +8,5 @@
 
 ## For Run (Files should be in same location -> Example: Desktop)
 * java -jar HakanLang.jar test.hakan
+## Or Run playground
+* java -jar HakanLang.jar
