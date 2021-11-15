@@ -13,20 +13,37 @@ public class Main {
     private static String enteredText = "";
 
     public static void main(String[] args) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))) {
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                runCode(line.trim());
+        if (args.length == 0) {
+            System.out.println("*** HakanLang Programming Language ***");
+            String code = "";
+
+            while (!code.equals("-1")) {
+                System.out.print("||(-1 for EXIT) >>> ");
+                code = scanner.nextLine();
+                runCode(code);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
+        } else {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    runCode(line.trim());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                scanner.close();
+            }
         }
     }
 
     private static void runCode(String line) {
         if (line.startsWith("?") || line.equals("")) {
+            return;
+        }
+
+        if (line.startsWith("-")) {
+            Object foundedValue = variables.get(line.substring(1));
+            System.out.println(foundedValue);
             return;
         }
 
@@ -37,17 +54,39 @@ public class Main {
         } else if (line.startsWith("#")) {
             createVariable(line);
         } else if (line.startsWith(DefaultMathOperations.add.name())) {
-            String[] strNumber = line.split(" ");
-
-            int sum = 0;
-            for (String str : strNumber) {
-                if (!str.equals("add")) {
-                    sum += Integer.parseInt(str);
-                }
-            }
-
-            display(DefaultFunctions.displayMathResult, String.valueOf(sum));
+            displayMathOperation(DefaultMathOperations.add, line);
+        } else if (line.startsWith(DefaultMathOperations.sub.name())) {
+            displayMathOperation(DefaultMathOperations.sub, line);
+        } else if (line.startsWith(DefaultMathOperations.mul.name())) {
+            displayMathOperation(DefaultMathOperations.mul, line);
+        } else if (line.startsWith(DefaultMathOperations.div.name())) {
+            displayMathOperation(DefaultMathOperations.div, line);
+        } else if (line.startsWith(DefaultMathOperations.mod.name())) {
+            displayMathOperation(DefaultMathOperations.mod, line);
         }
+    }
+
+    private static void displayMathOperation(DefaultMathOperations operationType, String line) {
+        String[] strNumber = line.split(" ");
+
+        if (strNumber.length == 2) {
+            display(DefaultFunctions.displayMathResult, strNumber[1]);
+            return;
+        }
+
+        int res = Integer.parseInt(strNumber[1]);
+
+        for (int i = 1; i < strNumber.length - 1; i++) {
+            switch (operationType) {
+                case add -> res += Integer.parseInt(strNumber[i + 1]);
+                case sub -> res -= Integer.parseInt(strNumber[i + 1]);
+                case mul -> res *= Integer.parseInt(strNumber[i + 1]);
+                case div -> res /= Integer.parseInt(strNumber[i + 1]);
+                case mod -> res %= Integer.parseInt(strNumber[i + 1]);
+            }
+        }
+
+        display(DefaultFunctions.displayMathResult, String.valueOf(res));
     }
 
     private static void createVariable(String line) {
@@ -128,12 +167,8 @@ public class Main {
 
                 text += "\n";
             }
-            case enterLine -> {
-                text = line.substring(DefaultFunctions.enterLine.name().length() + 2, line.length() - 2);
-            }
-            case displayMathResult -> {
-                text = line + "\n";
-            }
+            case enterLine -> text = line.substring(DefaultFunctions.enterLine.name().length() + 2, line.length() - 2);
+            case displayMathResult -> text = line + "\n";
         }
 
         System.out.print(text);
