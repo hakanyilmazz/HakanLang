@@ -18,5 +18,5 @@
                                 display("Local variable is ${-localVariable}")
                                 display(-otherLocalVariable)
                             }
-14- use void function ~functionName()
+14- use void function -> ~functionName()
 --------------------------------------------------------------------------------------------
