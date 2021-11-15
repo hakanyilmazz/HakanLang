@@ -1,3 +1,4 @@
+0- All variables are in same scope
 1- print a text -> display("hello")
 2- print with string interpolation -> display("hello ${-name}")
 3- create comment -> ? this is one line comment
