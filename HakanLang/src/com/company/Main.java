@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final Map<String, String> variables = new HashMap<>();
+    private static final Functions functions = new Functions();
     private static String enteredText = "";
 
     public static void main(String[] args) {
@@ -23,7 +24,22 @@ public class Main {
                 try {
                     System.out.print("||(-1 for EXIT) >>> ");
                     code = scanner.nextLine();
+
+                    if (code.startsWith("f-") && code.endsWith("{")) {
+                        String detail = "";
+                        code += "\n";
+                        StringBuilder lineBuilder = new StringBuilder(code);
+
+                        while (!detail.endsWith("}")) {
+                            detail = scanner.nextLine();
+                            lineBuilder.append(detail).append("\n");
+                        }
+
+                        code = lineBuilder.toString();
+                    }
+
                     runCode(code);
+
                 } catch (Exception e) {
                     System.out.println("Code exception!");
                 }
@@ -31,8 +47,29 @@ public class Main {
         } else {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))) {
                 String line;
+                StringBuilder functionCode = new StringBuilder();
+                boolean isFunction = false;
+
                 while ((line = bufferedReader.readLine()) != null) {
                     try {
+                        if (line.startsWith("f-") && line.endsWith("{")) {
+                            functionCode.append(line).append("\n");
+                            isFunction = true;
+                            continue;
+                        }
+
+                        if (line.endsWith("}")) {
+                            isFunction = false;
+                            functionCode.append(line).append("\n");
+                            line = functionCode.toString();
+                            functionCode = new StringBuilder();
+                        }
+
+                        if (isFunction) {
+                            functionCode.append(line).append("\n");
+                            continue;
+                        }
+
                         runCode(line.trim());
                     } catch (Exception e) {
                         System.out.println("Code exception!");
@@ -47,12 +84,15 @@ public class Main {
     }
 
     private static void runCode(String line) {
+        line = line.trim();
+
         if (line.startsWith("?") || line.equals("")) {
             return;
         }
 
         if (line.startsWith("for")) {
             createForLoop(line);
+            return;
         }
 
         if (line.startsWith("-")) {
@@ -67,6 +107,27 @@ public class Main {
 
             System.out.println(foundedValue);
 
+            return;
+        }
+
+        if (line.startsWith("f-")) {
+            if (line.endsWith("{")) {
+                String detail = "";
+                line += "\n";
+                StringBuilder lineBuilder = new StringBuilder(line);
+
+                while (!detail.endsWith("}")) {
+                    detail = scanner.nextLine();
+                    lineBuilder.append(detail).append("\n");
+                }
+
+                line = lineBuilder.toString();
+            }
+
+            functions.createFunction(line);
+            return;
+        } else if (line.startsWith("~")) {
+            display(DefaultFunctions.runFunction, functions.runFunction(line));
             return;
         }
 
@@ -234,13 +295,20 @@ public class Main {
             }
             case enterLine -> text = line.substring(DefaultFunctions.enterLine.name().length() + 2, line.length() - 2);
             case displayMathResult -> text = line + "\n";
+            case runFunction -> {
+                String[] lines = line.split("\n");
+                for (String codeLine : lines) {
+                    runCode(codeLine);
+                }
+                return;
+            }
         }
 
         System.out.print(text);
     }
 
     private enum DefaultFunctions {
-        display, enterLine, displayMathResult
+        display, enterLine, runFunction, displayMathResult
     }
 
     private enum DefaultMathOperations {

@@ -10,3 +10,13 @@
 10- don't use ';'
 11- just write one line code
 12- for -> 1..5 i -> display("${-i} times test") or display("test")
+13- create void function ->
+                            f-functionName() {
+                                display("Some text")
+                                #localVariable = "test"
+                                #otherLocalVariable = 100
+                                display("Local variable is ${-localVariable}")
+                                display(-otherLocalVariable)
+                            }
+14- use void function ~functionName()
+--------------------------------------------------------------------------------------------
