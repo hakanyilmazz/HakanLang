@@ -1,5 +1,5 @@
 # HakanLang
-I tried to write  programming language that has different syntax! :D
+I tried to write a programming language that has different syntax! :D
 
 ## Requirements
 * Java JDK 17 (Run to file or code)
