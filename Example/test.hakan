@@ -37,3 +37,5 @@ add 1 2 3
 
 ? displays to screen 10
 add 1 2 3 4
+
+for -> 1..5 i -> display("${-i} times test")

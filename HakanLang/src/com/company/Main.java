@@ -3,6 +3,8 @@ package com.company;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,22 +20,30 @@ public class Main {
             String code = "";
 
             while (!code.equals("-1")) {
-                System.out.print("||(-1 for EXIT) >>> ");
-                code = scanner.nextLine();
-                runCode(code);
+                try {
+                    System.out.print("||(-1 for EXIT) >>> ");
+                    code = scanner.nextLine();
+                    runCode(code);
+                } catch (Exception e) {
+                    System.out.println("Code exception!");
+                }
             }
         } else {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))) {
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
-                    runCode(line.trim());
+                    try {
+                        runCode(line.trim());
+                    } catch (Exception e) {
+                        System.out.println("Code exception!");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                scanner.close();
             }
         }
+
+        scanner.close();
     }
 
     private static void runCode(String line) {
@@ -41,9 +51,22 @@ public class Main {
             return;
         }
 
+        if (line.startsWith("for")) {
+            createForLoop(line);
+        }
+
         if (line.startsWith("-")) {
-            Object foundedValue = variables.get(line.substring(1));
+            String foundedValue = variables.get(line.substring(1));
+
+            if (line.contains(".")) {
+                foundedValue = variables.get(line.substring(1, line.indexOf(".")));
+                String methodName = line.substring(line.indexOf(".") + 1);
+                System.out.println(getStrFromStringMethod(foundedValue, methodName));
+                return;
+            }
+
             System.out.println(foundedValue);
+
             return;
         }
 
@@ -64,6 +87,27 @@ public class Main {
         } else if (line.startsWith(DefaultMathOperations.mod.name())) {
             displayMathOperation(DefaultMathOperations.mod, line);
         }
+    }
+
+    private static void createForLoop(String line) {
+        if (!line.startsWith("for")) {
+            return;
+        }
+
+        String forArguments = line.substring(line.indexOf("->") + 2).trim();
+        String iteratedLine = line.substring(line.lastIndexOf("->") + 2).trim();
+
+        String[] arguments = forArguments.split(" ");
+        String strNumbers = arguments[0];
+
+        for (int i = Integer.parseInt(strNumbers.substring(0, strNumbers.indexOf(".")));
+             i <= Integer.parseInt(strNumbers.substring(strNumbers.lastIndexOf(".") + 1));
+             ++i) {
+            createVariable("#i = " + i);
+            runCode(iteratedLine);
+        }
+
+        variables.remove("i");
     }
 
     private static void displayMathOperation(DefaultMathOperations operationType, String line) {
@@ -110,7 +154,7 @@ public class Main {
                 Object foundedValue = variables.get(foundedVariableName);
 
                 if (foundedValue instanceof String str) {
-                    String methodName = value.substring(value.indexOf(".") + 1, value.length() - 2);
+                    String methodName = value.substring(value.indexOf(".") + 1);
                     value = getStrFromStringMethod(str, methodName);
                 }
             }
@@ -120,18 +164,39 @@ public class Main {
     }
 
     private static String getStrFromStringMethod(String str, String methodName) {
-        switch (methodName) {
-            case "length" -> {
-                return String.valueOf(str.length());
+        if (str.startsWith("-")) {
+            String value = variables.get(str.substring(1));
+            if (value != null) {
+                str = value;
             }
+        }
 
-            case "toLowerCase" -> {
-                return str.toLowerCase();
-            }
+        String parameter = methodName.substring(methodName.indexOf("(") + 1, methodName.indexOf(")"));
 
-            case "toUpperCase" -> {
-                return str.toUpperCase();
+        if (parameter.startsWith("-")) {
+            String value = variables.get(parameter.substring(1));
+            if (value != null) {
+                parameter = value;
             }
+        }
+
+        methodName = methodName.substring(0, methodName.indexOf("("));
+
+        Method method;
+        if (!parameter.isEmpty()) {
+            try {
+                method = str.getClass().getMethod(methodName, Object.class);
+                return String.valueOf(method.invoke(str, parameter));
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            method = str.getClass().getMethod(methodName);
+            return String.valueOf(method.invoke(str));
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
 
         return str;

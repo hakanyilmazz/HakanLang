@@ -1,0 +1,12 @@
+1- print a text -> display("hello")
+2- print with string interpolation -> display("hello ${-name}")
+3- create comment -> ? this is one line comment
+4- create a variable -> #variableName = "test"
+5- read variable -> -variableName
+6- Write on a text editor or playground
+7- make math operations -> add, mul, sub, div, mod -> add 1 2 3 4 5 or mul 1 2 3 4 5
+8- take input from user -> #test = enterLine("Enter a number: ")
+9- use String methods -> #test = "Hakan" and -test.length() or -test.toUpperCase()
+10- don't use ';'
+11- just write one line code
+12- for -> 1..5 i -> display("${-i} times test") or display("test")
