@@ -18,16 +18,15 @@ public class Functions {
         String codeLine = line.substring(line.indexOf("{") + 1, line.lastIndexOf("}")).trim();
         final Map<String, Object> functionDetail = new HashMap<>();
 
-        if (!codeLine.contains("#return ")) {
-            functionDetail.put("parameters", parameters);
-        } else {
-            String returnValue = codeLine.substring(line.indexOf("#return ") + 8);
-            returnValue = "#~" + functionName + " = " + returnValue;
-            codeLine = codeLine.substring(0, line.indexOf("#return "));
-            codeLine += returnValue;
+        String returnValue = "";
+        if (codeLine.contains("##return ")) {
+            returnValue = codeLine.substring(codeLine.indexOf("##return ") + 8).trim();
+            codeLine = codeLine.substring(0, codeLine.indexOf("##return "));
         }
 
+        functionDetail.put("parameters", parameters);
         functionDetail.put("codes", codeLine.trim());
+        functionDetail.put(functionName, returnValue);
 
         functions.put(functionName, functionDetail);
     }
@@ -46,6 +45,15 @@ public class Functions {
         }
 
         final Map<String, Object> functionValueWithParameters = functions.get(functionName);
-        return (String) functionValueWithParameters.get("codes");
+
+        if (functionValueWithParameters.get(functionName).equals("")) {
+            return (String) functionValueWithParameters.get("codes");
+        } else {
+            return functionValueWithParameters.get("codes") + "\n" + getReturnValue(functionName);
+        }
+    }
+
+    public String getReturnValue(String functionName) {
+        return ("##" + functions.get(functionName).get(functionName)).replaceAll("\"", "");
     }
 }

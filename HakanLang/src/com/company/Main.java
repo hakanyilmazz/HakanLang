@@ -14,10 +14,11 @@ public class Main {
     private static final Map<String, String> variables = new HashMap<>();
     private static final Functions functions = new Functions();
     private static String enteredText = "";
+    private static boolean isFile = false;
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("*** HakanLang Programming Language ***");
+            System.out.println("********** HakanLang Programming Language **********");
             String code = "";
 
             while (!code.equals("-1")) {
@@ -45,6 +46,8 @@ public class Main {
                 }
             }
         } else {
+            isFile = true;
+
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))) {
                 String line;
                 StringBuilder functionCode = new StringBuilder();
@@ -87,6 +90,11 @@ public class Main {
         line = line.trim();
 
         if (line.startsWith("?") || line.equals("")) {
+            return;
+        }
+
+        if (line.startsWith("##") && !isFile) {
+            System.out.println(line.substring(2));
             return;
         }
 
@@ -219,6 +227,14 @@ public class Main {
                     value = getStrFromStringMethod(str, methodName);
                 }
             }
+        } else if (value.startsWith("~")) {
+            String code = functions.runFunction(value);
+            display(DefaultFunctions.runFunction, code);
+            value = value.substring(value.indexOf("~") + 1, value.indexOf("("));
+            String result = functions.getReturnValue(value);
+            if (result.startsWith("##")) {
+                value = result.substring(2);
+            }
         }
 
         variables.put(variableName, value);
@@ -273,6 +289,7 @@ public class Main {
 
         switch (functionType) {
             case display -> {
+
                 final String value = line.substring(DefaultFunctions.display.name().length() + 1, line.length() - 1);
 
                 if (value.startsWith("\"")) {
@@ -284,6 +301,11 @@ public class Main {
                         if (tempText.startsWith("-")) {
                             String variableName = tempText.substring(1);
                             text = constantText + variables.get(variableName);
+                        } else if (tempText.startsWith("~")) {
+                            runCode(tempText);
+                            tempText = tempText.substring(tempText.indexOf("~") + 1, tempText.indexOf("("));
+                            String result = functions.getReturnValue(tempText).substring(2);
+                            text = constantText + result;
                         }
                     }
                 } else if (value.startsWith("-")) {

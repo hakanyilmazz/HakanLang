@@ -1,5 +1,5 @@
 1- print a text -> display("hello")
-2- print with string interpolation (just can print text + variable, cannot run functions) -> display("hello ${-name}")
+2- print with string interpolation -> display("hello ${-name}")
 3- create comment -> ? this is one line comment
 4- create a variable -> #variableName = "test"
 5- read variable -> -variableName
@@ -10,7 +10,7 @@
 10- don't use ';'
 11- just write one line code
 12- for -> 1..5 i -> display("${-i} times test") or display("test")
-13- create void function ->
+13- create void or returned function ->
                             f-functionName() {
                                 display("Some text")
                                 #localVariable = "test"
@@ -18,5 +18,12 @@
                                 display("Local variable is ${-localVariable}")
                                 display(-otherLocalVariable)
                             }
+                            f-functionName() {
+                                display("Some text")
+                                ##return 100
+                            }
 14- use void function -> ~functionName()
+15- use returned function -> #test = ~functionName()
+16- use returned function with string interpolation -> display("Test is ${~functionName()}")
+17- Write number to console (for playground)-> ##number or ##100
 --------------------------------------------------------------------------------------------

@@ -50,3 +50,14 @@ f-sayHello() {
 
 ? use void method
 ~sayHello()
+
+? create has return function
+f-test() {
+    display("test")
+    ##return 4
+}
+
+#functionValue = ~test()
+display("Function value is ${-functionValue}")
+
+display("t: ${~test()}")
