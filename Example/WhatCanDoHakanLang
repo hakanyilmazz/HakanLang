@@ -1,5 +1,5 @@
 1- print a text -> display("hello")
-2- print with string interpolation -> display("hello ${-name}")
+2- print with string interpolation (just can print text + variable, cannot run functions) -> display("hello ${-name}")
 3- create comment -> ? this is one line comment
 4- create a variable -> #variableName = "test"
 5- read variable -> -variableName
