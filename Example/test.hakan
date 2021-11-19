@@ -61,3 +61,9 @@ f-test() {
 display("Function value is ${-functionValue}")
 
 display("t: ${~test()}")
+
+? file operations
+$file -> "test.txt"
+$read
+$search -> "hello, test"
+$lineCount

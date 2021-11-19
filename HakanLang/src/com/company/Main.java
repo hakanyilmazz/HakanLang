@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -139,11 +140,62 @@ public class Main {
             return;
         }
 
+        if (line.startsWith("$file -> \"") && line.endsWith("\"")) {
+            String path = line.substring(10, line.length() - 1);
+            try (FileManager fileManager = new FileManager(path)) {
+                createVariable("#file = " + fileManager.getPath());
+                display(DefaultFunctions.display, "display(\"Reading is successful: ${-file}\")");
+            } catch (Exception e) {
+                System.out.println("File not found!");
+            }
+
+            return;
+        }
+
+        if (line.startsWith("$read")) {
+            String path = variables.get("file");
+
+            try (FileManager fileManager = new FileManager(path)) {
+                List<String> textLines = fileManager.getTextLines();
+                System.out.println(textLines);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return;
+        }
+
+        if (line.startsWith("$search -> \"") && line.endsWith("\"")) {
+            String path = variables.get("file");
+
+            try (FileManager fileManager = new FileManager(path)) {
+                String[] temp = line.substring(12, line.length() - 1).trim().split(", ");
+                List<String> textLines = fileManager.search(temp);
+                System.out.println(textLines);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return;
+        }
+
+        if (line.startsWith("$lineCount")) {
+            String path = variables.get("file");
+
+            try (FileManager fileManager = new FileManager(path)) {
+                System.out.println(fileManager.getLineCount());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return;
+        }
+
         if (line.startsWith(DefaultFunctions.display.name())) {
             display(DefaultFunctions.display, line);
         } else if (line.startsWith(DefaultFunctions.enterLine.name())) {
             enteredText = enterLine(line);
-        } else if (line.startsWith("#")) {
+        } else if (line.startsWith("#") && !line.startsWith("##")) {
             createVariable(line);
         } else if (line.startsWith(DefaultMathOperations.add.name())) {
             displayMathOperation(DefaultMathOperations.add, line);
