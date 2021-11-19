@@ -2,11 +2,15 @@
 I tried to write a programming language that has different syntax! :D
 
 ## Requirements
-* Java JDK 17 (Run to file or code)
-* Intellij IDEA Community (Run to code)
-* Program jar file https://github.com/hakanyilmazz/HakanLang/releases/download/hakanlang-1.0-alpha/HakanLang.jar
+* Java JDK 8 or later versions
+* [Download Interpreter](https://github.com/hakanyilmazz/HakanLang/releases/download/hakanlang/HakanLang.jar)
 
-## For Run (Files should be in same location -> Example: Desktop)
-* java -jar HakanLang.jar test.hakan
-## Or Run playground
-* java -jar HakanLang.jar
+## Run 'fileName.hakan' File
+```
+java -jar HakanLang.jar test.hakan 
+```
+
+## Or Run Playground
+```
+java -jar HakanLang.jar
+```
