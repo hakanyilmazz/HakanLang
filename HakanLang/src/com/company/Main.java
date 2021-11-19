@@ -1,5 +1,9 @@
 package com.company;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.beans.Expression;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -89,6 +94,11 @@ public class Main {
 
     private static void runCode(String line) {
         line = line.trim();
+
+        if (isMathOperation(line) && !isFile) {
+            showMathResult(line);
+            return;
+        }
 
         if (line.startsWith("?") || line.equals("")) {
             return;
@@ -210,6 +220,16 @@ public class Main {
         }
     }
 
+    private static void showMathResult(String line) {
+        try {
+            ScriptEngineManager mgr = new ScriptEngineManager();
+            ScriptEngine engine = mgr.getEngineByName("JavaScript");
+            System.out.println(engine.eval(line));
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void createForLoop(String line) {
         if (!line.startsWith("for")) {
             return;
@@ -243,11 +263,21 @@ public class Main {
 
         for (int i = 1; i < strNumber.length - 1; i++) {
             switch (operationType) {
-                case add -> res += Integer.parseInt(strNumber[i + 1]);
-                case sub -> res -= Integer.parseInt(strNumber[i + 1]);
-                case mul -> res *= Integer.parseInt(strNumber[i + 1]);
-                case div -> res /= Integer.parseInt(strNumber[i + 1]);
-                case mod -> res %= Integer.parseInt(strNumber[i + 1]);
+                case add:
+                    res += Integer.parseInt(strNumber[i + 1]);
+                    break;
+                case sub:
+                    res -= Integer.parseInt(strNumber[i + 1]);
+                    break;
+                case mul:
+                    res *= Integer.parseInt(strNumber[i + 1]);
+                    break;
+                case div:
+                    res /= Integer.parseInt(strNumber[i + 1]);
+                    break;
+                case mod:
+                    res %= Integer.parseInt(strNumber[i + 1]);
+                    break;
             }
         }
 
@@ -272,11 +302,11 @@ public class Main {
             boolean isContainsVariable = variables.containsKey(foundedVariableName);
 
             if (isContainsVariable) {
-                Object foundedValue = variables.get(foundedVariableName);
+                String foundedValue = variables.get(foundedVariableName);
 
-                if (foundedValue instanceof String str) {
+                if (foundedValue != null) {
                     String methodName = value.substring(value.indexOf(".") + 1);
-                    value = getStrFromStringMethod(str, methodName);
+                    value = getStrFromStringMethod(foundedValue, methodName);
                 }
             }
         } else if (value.startsWith("~")) {
@@ -340,10 +370,8 @@ public class Main {
         String text = "";
 
         switch (functionType) {
-            case display -> {
-
+            case display:
                 final String value = line.substring(DefaultFunctions.display.name().length() + 1, line.length() - 1);
-
                 if (value.startsWith("\"")) {
                     text = value.substring(1, value.length() - 1);
 
@@ -364,21 +392,31 @@ public class Main {
                     String variableName = value.substring(1);
                     text = variables.get(variableName);
                 }
-
                 text += "\n";
-            }
-            case enterLine -> text = line.substring(DefaultFunctions.enterLine.name().length() + 2, line.length() - 2);
-            case displayMathResult -> text = line + "\n";
-            case runFunction -> {
+                break;
+            case enterLine:
+                text = line.substring(DefaultFunctions.enterLine.name().length() + 2, line.length() - 2);
+                break;
+            case displayMathResult:
+                text = line + "\n";
+                break;
+            case runFunction:
                 String[] lines = line.split("\n");
                 for (String codeLine : lines) {
                     runCode(codeLine);
                 }
                 return;
-            }
         }
 
         System.out.print(text);
+    }
+
+    private static boolean isMathOperation(String line) {
+        if (Pattern.compile("\\p{L}").matcher(line).find()) {
+            return false;
+        } else {
+            return Pattern.compile("[-+*/()0-9]").matcher(line).find();
+        }
     }
 
     private enum DefaultFunctions {

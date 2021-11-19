@@ -26,5 +26,10 @@
 14- use void function -> ~functionName()
 15- use returned function -> #test = ~functionName()
 16- use returned function with string interpolation -> display("Test is ${~functionName()}")
-17- Write number to console (for playground)-> ##number or ##100
+17- Write number to console (for playground) -> ##number or ##100
+18- Calculate some math operations (for playground) -> 1 + 2 + 3 + 4 -> prints 10
+19- Read file from path -> $file -> "test.txt"
+20- Get file text -> $read
+21- Search text -> $search -> "test, text, find, another, coding, java"
+22- Get line count -> $lineCount
 --------------------------------------------------------------------------------------------
